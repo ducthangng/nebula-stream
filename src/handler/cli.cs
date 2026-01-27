@@ -8,13 +8,13 @@ public static class CLIHandler {
     public static async Task<int> RunAsync(string[] args) {
         var rootCommand = new RootCommand("Nebula CLI");
 
-        var helloCommand = new Command("hello", "Display a greeting!");
+        var initCommand = new Command("init", "Initialize Nebula Project!");
 
-        helloCommand.SetHandler(() => {
-            AnsiConsole.MarkupLine("[bold blue]Nebula:[/] Hello World!");
+        initCommand.SetHandler(() => {
+            AnsiConsole.MarkupLine("[bold blue]Nebula:[/] init World!");
         });
 
-        rootCommand.AddCommand(helloCommand);
+        rootCommand.AddCommand(initCommand);
 
         return await rootCommand.InvokeAsync(args);
     }
