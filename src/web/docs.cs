@@ -16,6 +16,11 @@ public class DocsController : ControllerBase
             command = "nebula deploy",
             description = "Pushes code to the cloud.",
             usage = "nebula deploy"
+        },
+        Build = new {
+            command = "nebula build",
+            description = "Build docker image.",
+            usage = "nebula build"
         }
     };
 
@@ -32,5 +37,10 @@ public class DocsController : ControllerBase
     [HttpGet("deploy")]
     public IActionResult GetDeploy() {
         return Ok(_nebulaDocs.Deploy);
+    }
+
+    [HttpGet("build")]
+    public IActionResult GetBuild() {
+        return Ok(_nebulaDocs.Build);
     }
 }

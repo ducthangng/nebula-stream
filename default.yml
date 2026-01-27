@@ -1,0 +1,35 @@
+# Nebula Stream Project Configuration
+# Generated on: 2026-01-27
+
+project:
+  name: "my-nebula-app"
+  version: "1.0.0"
+  environment: "development" # [development, staging, production]
+
+# Cloud Provider Settings
+infrastructure:
+  provider: "digitalocean" # Your preferred provider
+  region: "sgp1"
+  plan: "s-1vcpu-1gb" # Droplet size
+
+# Deployment Strategy
+deployment:
+  strategy: "rolling" # Options: rolling, blue-green
+  instances: 2
+  health_check:
+    path: "/api/health"
+    port: 8080
+
+# Services & Networking
+services:
+  - name: "web-server"
+    image: "nginx:latest"
+    ports:
+      - "80:80"
+    env:
+      NODE_ENV: "production"
+
+# Automation & Hooks
+hooks:
+  pre_deploy: "echo 'Starting deployment...'"
+  post_deploy: "echo 'Deployment successful!'"
