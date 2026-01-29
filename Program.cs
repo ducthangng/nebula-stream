@@ -3,11 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nebula.Handlers;
 using Nebula.web;
+using Nebula.Entity;
+
+DotNetEnv.Env.Load();
+
+var registry = new Registry();
+var cli = new CLIHandler(registry);
 
 // CLI MODE
 if (args.Length > 0)
 {
-    return await CLIHandler.RunAsync(args);
+    return await cli.RunAsync(args);
 }
 
 // WEB MODE

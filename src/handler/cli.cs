@@ -4,11 +4,18 @@ using Spectre.Console;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using Nebula.Entity;
 
 namespace Nebula.Handlers;
 
-public static class CLIHandler {
-    public static async Task<int> RunAsync(string[] args) {
+public class CLIHandler {
+    private readonly Registry _registry;
+
+    public CLIHandler(Registry registry) {
+        _registry = registry;
+    }
+
+    public async Task<int> RunAsync(string[] args) {
         var rootCommand = new RootCommand("Nebula CLI");
 
         // --- 1. INIT COMMAND ---
@@ -29,7 +36,7 @@ public static class CLIHandler {
         return await rootCommand.InvokeAsync(args);
     }
 
-    public static async Task InitCommand() {
+    public async Task InitCommand() {
         AnsiConsole.MarkupLine("[bold blue]Initialize Nebula Project![/]");
 
         string fileName = "nebula.yaml";
@@ -39,11 +46,7 @@ public static class CLIHandler {
 
             string resourceName = "nebula_stream.default.yml";
 
-            using Stream stream = assembly.GetManifestResourceStream(resourceName);
-
-            if (stream == null) {
-                throw new Exception("Embeded default.yml not found");
-            }
+            using Stream stream = assembly.GetManifestResourceStream(resourceName) ?? throw new Exception("Embeded default.yml not found");
 
             using StreamReader reader = new StreamReader(stream);
             string content = await reader.ReadToEndAsync();
@@ -60,13 +63,17 @@ public static class CLIHandler {
     }
 
     // @TODO
-    public static async Task DeployCommand() {
+    public async Task DeployCommand() {
         AnsiConsole.MarkupLine("[bold blue]Deploy Your Project![/]");
     }
 
-    public static async Task BuildCommand() {
+    public async Task BuildCommand() {
         AnsiConsole.MarkupLine("[bold blue]Build Your Project![/]");
         string dockerFile = "Dockerfile";
+        string ecrURI = Environment.GetEnvironmentVariable("AWS_URI_DOCKER_REPO") ?? throw new Exception("Environment variable AWS_URI_DOCKER_REPO is missing!");
+        string uniqueTag = Guid.NewGuid().ToString("n").Substring(0, 8);
+        string tag = uniqueTag;
+
         // Check file Dockerfile exist or not
         if (!File.Exists(dockerFile)) {
             AnsiConsole.MarkupLine($"[red]Warning:[/] {dockerFile} does not exist in this folder.");
@@ -78,7 +85,7 @@ public static class CLIHandler {
             .StartAsync("Building Docker Image...", async ctx => {
                 var startInfo = new ProcessStartInfo {
                     FileName = "docker",
-                    Arguments = "build -t nebula-app .",
+                    Arguments = $"build -t {ecrURI}:{tag} .",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -107,10 +114,14 @@ public static class CLIHandler {
                 } else {
                     AnsiConsole.MarkupLine("[red]✘[/] Docker build failed. Check your Dockerfile.");
                 }
+
+                // @TODO: Store in ECR
+                AnsiConsole.MarkupLine($"[yellow]Pushing to AWS ECR...[/]");
+                await _registry.PushToECRAsync(ecrURI, tag);
+
+                AnsiConsole.MarkupLine("[bold green]DONE![/] Your image is now in the cloud.");
             });
 
-        // Store in local
-
-        // @TODO: Store in S3
+       
     }
 };
