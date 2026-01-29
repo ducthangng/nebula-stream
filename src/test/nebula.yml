@@ -1,12 +1,3 @@
-# Nebula Stream Project Configuration
-# Generated on: 2026-01-27
-
-project:
-  name: "my-nebula-app"
-  version: "1.0.0"
-  environment: "development" # [development, staging, production]
-
-# Cloud Provider Settings
 infrastructure:
   provider: "digitalocean" # Your preferred provider
   region: "sgp1"

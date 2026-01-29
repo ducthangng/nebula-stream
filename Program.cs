@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Nebula.Handlers;
+﻿using Nebula.Handlers;
 using Nebula.web;
-using Nebula.Entity;
+using Nebula.ECR;
 
 DotNetEnv.Env.Load();
 
@@ -27,14 +24,15 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();   
-    app.UseSwaggerUI(c => {
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nebula API V1");
-        c.RoutePrefix = string.Empty; 
+        c.RoutePrefix = string.Empty;
     });
 }
 
-app.MapControllers(); 
+app.MapControllers();
 app.Run();
 
 return 0;
