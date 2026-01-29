@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  api:
+    # Use the project name and the dynamic tag from your Nebula CLI
+    image: ${NEBULA_IMAGE}
+    container_name: ${PROJECT_NAME:-nebula-api-service}
+    
+    # Map the internal port 6789 to your desired host port (e.g., 8080)
+    ports:
+      - "6789:6789"
+    
+    # Mount the current directory for hot-reloading during development
+    volumes:
+      - .:/code
+    
+    # Environment variables
+    environment:
+      - ENV=development
+      - PYTHONUNBUFFERED=1
+
+    # Restart policy
+    restart: always

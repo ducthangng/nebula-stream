@@ -1,9 +1,5 @@
-using System.Runtime.InteropServices;
 using System.Text.Json;
-using Docker.DotNet.Models;
 using Spectre.Console;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Nebula.Helper;
 
@@ -155,5 +151,28 @@ public class NebulaReader
         }
 
         DisplayImages(records);
+    }
+
+    public async Task<ImageRecord?> GetLatestImageRecordAsync(string? tag)
+    {
+        var pathName = Path.Combine(".nebula", "images.json");
+        List<ImageRecord> records = new();
+
+        if (File.Exists(pathName))
+        {
+            var content = await File.ReadAllTextAsync(pathName);
+            records = JsonSerializer.Deserialize<List<ImageRecord>>(content) ?? new();
+        }
+
+        if (records.Count == 0) return null;
+
+        IEnumerable<ImageRecord> query = records;
+
+        if (!string.IsNullOrEmpty(tag))
+        {
+            query = query.Where(r => r.Tag == tag);
+        }
+
+        return query.OrderByDescending(r => r.CreatedAt).FirstOrDefault();
     }
 }

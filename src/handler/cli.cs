@@ -6,6 +6,8 @@ using Nebula.ECR;
 using Nebula.Helper;
 using System.Text.Json;
 using System.Runtime.InteropServices;
+using Amazon.ECR.Model;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 namespace Nebula.Handlers;
 
@@ -14,6 +16,8 @@ public class CLIHandler
 {
     private readonly Registry _registry;
     private readonly NebulaReader _nebulaReader;
+    string ecrURI = Environment.GetEnvironmentVariable("AWS_URI_DOCKER_REPO") ?? throw new Exception("Environment variable AWS_URI_DOCKER_REPO is missing!");
+
     public CLIHandler(Registry registry)
     {
         _registry = registry;
@@ -53,6 +57,27 @@ public class CLIHandler
         var imagesCommand = new Command("images", "Retrieve images");
         imagesCommand.SetHandler(async () => await RetrieveImagesCommand());
         rootCommand.AddCommand(imagesCommand);
+
+        // --- 5. USE IMAGES COMMAND ---
+        var useCommand = new Command("use", "Use Docker image");
+        var useOptionTag = new Option<string?>(
+            aliases: new[] { "--tag", "-t" },
+            description: "Tag of the docker image"
+        );
+        var useOptionDetach = new Option<bool>(
+            aliases: new[] { "-d" },
+            description: "Detach the server"
+        );
+        var useOptionFile = new Option<string?>(
+            aliases: new[] { "--file", "-f" },
+            description: "Specify the docker compose file"
+        );
+        useCommand.AddOption(useOptionTag);
+        useCommand.AddOption(useOptionDetach);
+        useCommand.AddOption(useOptionFile);
+
+        useCommand.SetHandler(async (tag, file, detach) => await UseImagesCommand(tag, file, detach), useOptionTag, useOptionFile, useOptionDetach);
+        rootCommand.AddCommand(useCommand);
 
         return await rootCommand.InvokeAsync(args);
     }
@@ -128,11 +153,118 @@ public class CLIHandler
         await _nebulaReader.RetrieveImagesRecordAsync();
     }
 
+    public async Task UseImagesCommand(string? tag, string? file, bool detach)
+    {
+        var composeFile = file ?? "docker-compose.dev.yml";
+        if (!File.Exists(composeFile))
+        {
+            AnsiConsole.MarkupLine($"No docker compose file [red]{composeFile}[/], please create one.");
+            return;
+        }
+
+        var latestImage = await _nebulaReader.GetLatestImageRecordAsync(tag);
+        if (latestImage == null)
+        {
+            if (!string.IsNullOrEmpty(tag))
+            {
+                AnsiConsole.MarkupLine($"[red]Tag {tag} does not exist.[/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[red]No images to use, please create one.[/]");
+            }
+            return;
+        }
+
+        await _registry.PullFromECRAsync(ecrURI, latestImage.Tag);
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "docker-compose",
+            Arguments = $"-f {composeFile} up {(detach ? "-d" : "")}",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+
+        startInfo.Environment["NEBULA_IMAGE"] = $"{ecrURI}:{latestImage.Tag}";
+        startInfo.Environment["PROJECT_NAME"] = latestImage.ProjectName;
+
+        using var process = new Process { StartInfo = startInfo };
+
+        if (!detach)
+        {
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    AnsiConsole.MarkupLine($"[grey][[LOG]][/] {e.Data.EscapeMarkup()}");
+                }
+            };
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    AnsiConsole.MarkupLine($"[blue][[INFO]][/] {e.Data.EscapeMarkup()}");
+                }
+            };
+
+            Console.CancelKeyPress += async (sender, e) =>
+            {
+                e.Cancel = true;
+
+                AnsiConsole.MarkupLine("\n[yellow]Stopping containers...[/]");
+
+                var stopInfo = new ProcessStartInfo
+                {
+                    FileName = "docker-compose",
+                    Arguments = $"-f {composeFile} down",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var stopProcess = Process.Start(stopInfo);
+                if (stopProcess != null)
+                {
+                    await stopProcess.WaitForExitAsync();
+                }
+
+                AnsiConsole.MarkupLine("[green]✔[/] Cleanup complete. Goodbye!");
+                Environment.Exit(0);
+            };
+        }
+
+        if (!process.Start())
+        {
+            AnsiConsole.MarkupLine("[red]✘ Failed to initialize the process.[/]");
+            return;
+        }
+
+        if (!detach)
+        {
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            AnsiConsole.MarkupLine("[yellow]Streaming logs... Press Ctrl+C to stop.[/]");
+        }
+
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode == 0)
+        {
+            AnsiConsole.MarkupLine("[green]✔[/] Services started successfully.");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[red]✘[/] Docker Compose failed to start.");
+        }
+    }
+
     public async Task BuildCommand()
     {
         AnsiConsole.MarkupLine("[bold blue]Build Your Project![/]");
         string dockerFile = "Dockerfile";
-        string ecrURI = Environment.GetEnvironmentVariable("AWS_URI_DOCKER_REPO") ?? throw new Exception("Environment variable AWS_URI_DOCKER_REPO is missing!");
         string uniqueTag = Guid.NewGuid().ToString("n").Substring(0, 8);
         string tag = uniqueTag;
 
