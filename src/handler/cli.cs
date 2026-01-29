@@ -6,8 +6,6 @@ using Nebula.ECR;
 using Nebula.Helper;
 using System.Text.Json;
 using System.Runtime.InteropServices;
-using Amazon.ECR.Model;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 namespace Nebula.Handlers;
 
