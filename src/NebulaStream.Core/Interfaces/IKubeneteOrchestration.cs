@@ -1,13 +1,14 @@
-using System.Threading.Tasks;
-using NebulaStream.CloudProvider;
+using Amazon.EKS;
+using Amazon.EKS.Model;
+using NebulaStream.Application.DTOs;
 
 namespace NebulaStream.CloudAbstractions
 {
-    public interface ICloudOrchestrator
+    public interface IKubernetesOrchestration
     {
-        Task<ClusterResponse> CreateClusterAsync(ClusterConfig config);
+        Task<ClusterResponse> CreateClusterAsync(Cluster clusterConfig);
         Task<bool> DeleteClusterAsync(string clusterId);
-        Task<NClusterStatus> GetStatusAsync(string clusterId);
+        Task<ClusterStatus> GetStatusAsync(string clusterId);
 
         // Quản lý Scaling (Node Pools)
         Task UpdateNodeCountAsync(string clusterId, int desiredCount);

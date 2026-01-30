@@ -5,5 +5,7 @@
     <Import Project="$(NuGetPackageRoot)microsoft.extensions.apidescription.server/8.0.0/build/Microsoft.Extensions.ApiDescription.Server.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.apidescription.server/8.0.0/build/Microsoft.Extensions.ApiDescription.Server.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.extensions.apidescription.client/0.3.0-preview7.19365.7/build/Microsoft.Extensions.ApiDescription.Client.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.apidescription.client/0.3.0-preview7.19365.7/build/Microsoft.Extensions.ApiDescription.Client.targets')" />
     <Import Project="$(NuGetPackageRoot)nswag.apidescription.client/13.0.5/build/NSwag.ApiDescription.Client.targets" Condition="Exists('$(NuGetPackageRoot)nswag.apidescription.client/13.0.5/build/NSwag.ApiDescription.Client.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.logging.abstractions/8.0.0/buildTransitive/net6.0/Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.logging.abstractions/8.0.0/buildTransitive/net6.0/Microsoft.Extensions.Logging.Abstractions.targets')" />
+    <Import Project="$(NuGetPackageRoot)awssdk.extensions.netcore.setup/4.0.3.22/buildTransitive/net8.0/AWSSDK.Extensions.NETCore.Setup.targets" Condition="Exists('$(NuGetPackageRoot)awssdk.extensions.netcore.setup/4.0.3.22/buildTransitive/net8.0/AWSSDK.Extensions.NETCore.Setup.targets')" />
   </ImportGroup>
 </Project>

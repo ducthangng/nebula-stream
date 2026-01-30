@@ -1,34 +1,17 @@
-using Amazon;
 using Amazon.EKS;
 using Amazon.EKS.Model;
-using AwsStatus = Amazon.EKS.ClusterStatus;
-
-using Microsoft.Extensions.Logging;
+using NebulaStream.Application.DTOs;
 using NebulaStream.CloudAbstractions;
-using NebulaStream.CloudProvider;
+using AwsStatus = Amazon.EKS.ClusterStatus;
+using Cluster = NebulaStream.Core.Entities.Cluster;
+using ClusterStatus = NebulaStream.Core.Enums.ClusterStatus;
+using Microsoft.Extensions.Logging;
 
 
-namespace NebulaStream.AWSAbstractions
+
+namespace NebulaStream.Infrastructure.CloudProviders.AWS
 {
-
-    public class EksConfig : ClusterConfig
-    {
-
-        // Polymorphism: only AWS_EKS has this
-        public required string[] SubnetIds { get; set; }
-        public required string RoleArn { get; set; }
-        public string[]? SecurityGroupIds { get; set; }
-
-        public EksConfig(string ClusterName, string Region, string MachineType,
-            int InitialNodeCount, string roleArn, string[] subnetIds) :
-            base(ClusterName, Region, MachineType, InitialNodeCount)
-        {
-            RoleArn = roleArn;
-            SubnetIds = subnetIds;
-        }
-    }
-
-    public class AwsEksOrchestrator : ICloudOrchestrator
+    public class EksClusterOrchestrator : IKubernetesOrchestration
     {
         /// <summary>
         ///  _eksClient implements IAmazonEKS to manage the EKS.
@@ -38,7 +21,7 @@ namespace NebulaStream.AWSAbstractions
         /// <summary>
         /// ILogger is from the Logging extension of Microsoft, to allow you to log the info out.
         /// </summary>
-        private readonly ILogger<AwsEksOrchestrator> _logger;
+        private readonly ILogger<EksClusterOrchestrator> _logger;
 
         /// <summary>
         /// Constructor for the class, the params are required.
@@ -46,24 +29,24 @@ namespace NebulaStream.AWSAbstractions
         /// <param name="eksClient"></param>
         /// <param name="logger"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public AwsEksOrchestrator(IAmazonEKS eksClient, ILogger<AwsEksOrchestrator> logger)
+        public EksClusterOrchestrator(IAmazonEKS eksClient, ILogger<EksClusterOrchestrator> logger)
         {
             _eksClient = eksClient ?? throw new ArgumentNullException(nameof(eksClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        private NClusterStatus MapAwsStatus(AwsStatus awsStatus) // Dùng biệt danh ở đây
+        private ClusterStatus MapAwsStatus(AwsStatus awsStatus) // Dùng biệt danh ở đây
         {
-            if (awsStatus == AwsStatus.ACTIVE) return NClusterStatus.Active;
-            if (awsStatus == AwsStatus.CREATING) return NClusterStatus.Creating;
-            if (awsStatus == AwsStatus.DELETING) return NClusterStatus.Deleting;
-            if (awsStatus == AwsStatus.FAILED) return NClusterStatus.Failed;
+            if (awsStatus == AwsStatus.ACTIVE) return ClusterStatus.Active;
+            if (awsStatus == AwsStatus.CREATING) return ClusterStatus.Creating;
+            if (awsStatus == AwsStatus.DELETING) return ClusterStatus.Deleting;
+            if (awsStatus == AwsStatus.FAILED) return ClusterStatus.Failed;
 
             // default
-            return NClusterStatus.Updating;
+            return ClusterStatus.Updating;
         }
 
-        public async Task<ClusterResponse> CreateClusterAsync(ClusterConfig config)
+        public async Task<ClusterResponse> CreateClusterAsync(Cluster config)
         {
             // cast to EKS config: Implicit Upcasting
             // ClusterConfig is the children of config, so it can be pushed into the father
@@ -108,27 +91,32 @@ namespace NebulaStream.AWSAbstractions
             }
         }
 
-        public Task<bool> DeleteClusterAsync(string clusterId)
+        Task<ClusterResponse> IKubernetesOrchestration.CreateClusterAsync(Amazon.EKS.Model.Cluster clusterConfig)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeployManifestAsync(string clusterId, string manifestContent)
+        Task<bool> IKubernetesOrchestration.DeleteClusterAsync(string clusterId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> GetKubeConfigAsync(string clusterId)
+        Task<AwsStatus> IKubernetesOrchestration.GetStatusAsync(string clusterId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<NClusterStatus> GetStatusAsync(string clusterId)
+        Task IKubernetesOrchestration.UpdateNodeCountAsync(string clusterId, int desiredCount)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateNodeCountAsync(string clusterId, int desiredCount)
+        Task<string> IKubernetesOrchestration.GetKubeConfigAsync(string clusterId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IKubernetesOrchestration.DeployManifestAsync(string clusterId, string manifestContent)
         {
             throw new NotImplementedException();
         }

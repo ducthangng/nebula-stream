@@ -48,6 +48,14 @@
               "target": "Package",
               "version": "[4.0.10.3, )"
             },
+            "AWSSDK.Extensions.NETCore.Setup": {
+              "target": "Package",
+              "version": "[4.0.3.22, )"
+            },
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.66, )"
+            },
             "NSwag.ApiDescription.Client": {
               "target": "Package",
               "version": "[13.0.5, )"
@@ -55,6 +63,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[10.0.1, )"
             },
             "Spectre.Console": {
               "target": "Package",

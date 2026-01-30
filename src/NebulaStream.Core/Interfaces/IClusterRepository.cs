@@ -1,5 +1,5 @@
-using NebulaStream.CloudProvider;
-
+using NebulaStream.Application.DTOs;
+using NebulaStream.Core.Enums;
 
 /// <summary>
 /// Interface quản lý lưu trữ thông tin Cluster vào Database.
@@ -7,5 +7,5 @@ using NebulaStream.CloudProvider;
 public interface IClusterRepository
 {
     Task SaveClusterAsync(ClusterResponse cluster);
-    Task UpdateStatusAsync(string clusterId, NClusterStatus status);
+    Task UpdateStatusAsync(string clusterId, ClusterStatus status);
 }
