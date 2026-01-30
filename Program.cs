@@ -2,7 +2,7 @@
 using Nebula.web;
 using Amazon.EKS;
 using NebulaStream.CloudAbstractions;
-using NebulaStream.AWSAbstractions;
+using NebulaStream.Infrastructure.CloudProviders.AWS;
 
 // CLI MODE
 if (args.Length > 0)
@@ -42,7 +42,7 @@ builder.Services.AddScoped<IClusterRepository>(sp =>
 
 // --- 4. Đăng ký Business Logic (SOLID) ---
 // Đăng ký Cloud Orchestrator cho AWS
-builder.Services.AddScoped<ICloudOrchestrator, IAwsEksOrchestrator>();
+builder.Services.AddScoped<IKubernetesOrchestration, EksClusterOrchestrator>();
 
 // Đăng ký Manager - Lớp điều phối chính cho Nebula Stream
 builder.Services.AddScoped<ClusterManager>();

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("nebula-stream")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0-preview1+48b3e1b763abbf35e316be226b1e0bf6b73e71e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0-preview1+e3c44937e8e99a01ec0a34e088c34a83a1ddc344")]
 [assembly: System.Reflection.AssemblyProductAttribute("nebula-stream")]
 [assembly: System.Reflection.AssemblyTitleAttribute("nebula-stream")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

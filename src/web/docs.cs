@@ -4,20 +4,25 @@ namespace Nebula.web;
 
 [ApiController]
 [Route("api/[controller]")]
+
 public class DocsController : ControllerBase
 {
-    private readonly dynamic _nebulaDocs = new {
-        Init = new {
+    private readonly dynamic _nebulaDocs = new
+    {
+        Init = new
+        {
             command = "nebula init",
             description = "Initializes a nebula project.",
             usage = "nebula init"
         },
-        Deploy = new {
+        Deploy = new
+        {
             command = "nebula deploy",
             description = "Pushes code to the cloud.",
             usage = "nebula deploy"
         },
-        Build = new {
+        Build = new
+        {
             command = "nebula build",
             description = "Build docker image.",
             usage = "nebula build"
@@ -25,22 +30,26 @@ public class DocsController : ControllerBase
     };
 
     [HttpGet]
-    public IActionResult GetAll() {
+    public IActionResult GetAll()
+    {
         return Ok(_nebulaDocs);
     }
 
     [HttpGet("init")]
-    public IActionResult GetInit() {
+    public IActionResult GetInit()
+    {
         return Ok(_nebulaDocs.Init);
     }
 
     [HttpGet("deploy")]
-    public IActionResult GetDeploy() {
+    public IActionResult GetDeploy()
+    {
         return Ok(_nebulaDocs.Deploy);
     }
 
     [HttpGet("build")]
-    public IActionResult GetBuild() {
+    public IActionResult GetBuild()
+    {
         return Ok(_nebulaDocs.Build);
     }
 }
