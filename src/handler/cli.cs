@@ -73,9 +73,18 @@ public class CLIHandler
         useCommand.AddOption(useOptionTag);
         useCommand.AddOption(useOptionDetach);
         useCommand.AddOption(useOptionFile);
-
         useCommand.SetHandler(async (tag, file, detach) => await UseImagesCommand(tag, file, detach), useOptionTag, useOptionFile, useOptionDetach);
         rootCommand.AddCommand(useCommand);
+
+        // --- 6. REMOVE IMAGE COMMAND ---
+        var deleteCommand = new Command("rm", "Remove Docker Image");
+        var deleteOptionTag = new Option<string?>(
+            aliases: new[] { "--tag", "-t" },
+            description: "Tag of docker image"
+        );
+        deleteCommand.AddOption(deleteOptionTag);
+        deleteCommand.SetHandler(async (tag) => await DeleteCommand(tag), deleteOptionTag);
+        rootCommand.AddCommand(deleteCommand);
 
         return await rootCommand.InvokeAsync(args);
     }
@@ -370,5 +379,44 @@ public class CLIHandler
 
                 AnsiConsole.MarkupLine("[bold green]DONE![/] Your image is now in the cloud.");
             });
+    }
+
+    public async Task DeleteCommand(string? tag)
+    {
+        if (string.IsNullOrEmpty(tag))
+        {
+            AnsiConsole.MarkupLine("[red]Provide tag to remove images.[/]");
+            return;
+        }
+
+        await _nebulaReader.DeleteImageRecordAsync(tag);
+
+        var removeInfo = new ProcessStartInfo
+        {
+            FileName = "docker",
+            Arguments = $"rmi {ecrURI}:{tag}",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = removeInfo };
+        if (process == null)
+        {
+            AnsiConsole.Markup($"[red]Server error, please try again.[/]");
+            return;
+        }
+
+        process.Start();
+
+        var output = await process.StandardOutput.ReadToEndAsync();
+        if (!String.IsNullOrEmpty(output))
+        {
+            AnsiConsole.WriteLine($"[bold yellow]LOG[/]: {Markup.Escape(output)}");
+        }
+
+        await process.WaitForExitAsync();
+
+        AnsiConsole.MarkupLine("[bold green]DONE![/] Your image is removed successfully");
     }
 };

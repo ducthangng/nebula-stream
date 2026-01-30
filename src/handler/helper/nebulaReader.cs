@@ -48,6 +48,34 @@ public class NebulaReader
         }
     }
 
+    public async Task DeleteImageRecordAsync(string tag)
+    {
+        var state = await GetProjectContextAsync();
+        if (state == null) return;
+
+        string imagesPath = Path.Combine(".nebula", "images.json");
+        List<ImageRecord> records = new();
+
+        try
+        {
+            if (File.Exists(imagesPath))
+            {
+                string existingJson = await File.ReadAllTextAsync(imagesPath);
+                records = JsonSerializer.Deserialize<List<ImageRecord>>(existingJson) ?? new();
+            }
+        }
+        catch { }
+
+        IEnumerable<ImageRecord> query = records;
+
+        var filtered = query.Where((r) => r.Tag != tag);
+
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string updatedJson = JsonSerializer.Serialize(filtered, options);
+
+        await File.WriteAllTextAsync(imagesPath, updatedJson);
+    }
+
     public async Task SaveImageRecordAsync(string tag, long sizeBytes)
     {
         var state = await GetProjectContextAsync();
