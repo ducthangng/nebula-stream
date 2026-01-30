@@ -1,0 +1,4 @@
+namespace NebulaStream.Application.DTOs
+{
+
+}

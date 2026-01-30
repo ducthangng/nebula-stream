@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/Users/minhhtamm/.nuget/packages/</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/Users/minhhtamm/.nuget/packages/</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">7.0.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="/Users/minhhtamm/.nuget/packages/" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)xunit.core/2.9.3/build/xunit.core.props" Condition="Exists('$(NuGetPackageRoot)xunit.core/2.9.3/build/xunit.core.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.apidescription.server/8.0.0/build/Microsoft.Extensions.ApiDescription.Server.props" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.apidescription.server/8.0.0/build/Microsoft.Extensions.ApiDescription.Server.props')" />
+    <Import Project="$(NuGetPackageRoot)swashbuckle.aspnetcore/10.1.0/build/Swashbuckle.AspNetCore.props" Condition="Exists('$(NuGetPackageRoot)swashbuckle.aspnetcore/10.1.0/build/Swashbuckle.AspNetCore.props')" />
+    <Import Project="$(NuGetPackageRoot)nswag.msbuild/13.0.5/build/NSwag.MSBuild.props" Condition="Exists('$(NuGetPackageRoot)nswag.msbuild/13.0.5/build/NSwag.MSBuild.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.apidescription.client/0.3.0-preview7.19365.7/build/Microsoft.Extensions.ApiDescription.Client.props" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.apidescription.client/0.3.0-preview7.19365.7/build/Microsoft.Extensions.ApiDescription.Client.props')" />
+    <Import Project="$(NuGetPackageRoot)nswag.apidescription.client/13.0.5/build/NSwag.ApiDescription.Client.props" Condition="Exists('$(NuGetPackageRoot)nswag.apidescription.client/13.0.5/build/NSwag.ApiDescription.Client.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Pkgxunit_analyzers Condition=" '$(Pkgxunit_analyzers)' == '' ">/Users/minhhtamm/.nuget/packages/xunit.analyzers/1.18.0</Pkgxunit_analyzers>
+    <PkgMicrosoft_Extensions_ApiDescription_Server Condition=" '$(PkgMicrosoft_Extensions_ApiDescription_Server)' == '' ">/Users/minhhtamm/.nuget/packages/microsoft.extensions.apidescription.server/8.0.0</PkgMicrosoft_Extensions_ApiDescription_Server>
+    <PkgNSwag_MSBuild Condition=" '$(PkgNSwag_MSBuild)' == '' ">/Users/minhhtamm/.nuget/packages/nswag.msbuild/13.0.5</PkgNSwag_MSBuild>
+    <PkgAWSSDK_Core Condition=" '$(PkgAWSSDK_Core)' == '' ">/Users/minhhtamm/.nuget/packages/awssdk.core/4.0.3.12</PkgAWSSDK_Core>
+    <PkgAWSSDK_EKS Condition=" '$(PkgAWSSDK_EKS)' == '' ">/Users/minhhtamm/.nuget/packages/awssdk.eks/4.0.10.3</PkgAWSSDK_EKS>
+    <PkgAWSSDK_ECR Condition=" '$(PkgAWSSDK_ECR)' == '' ">/Users/minhhtamm/.nuget/packages/awssdk.ecr/4.0.9.4</PkgAWSSDK_ECR>
+  </PropertyGroup>
+</Project>
