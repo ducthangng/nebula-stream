@@ -12,6 +12,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AWSSDK.EKS" Version="4.0.10.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
